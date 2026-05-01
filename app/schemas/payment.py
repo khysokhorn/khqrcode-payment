@@ -20,6 +20,8 @@ class ABAOrderCreate(BaseModel):
 
 class ABAPaymentResponse(BaseModel):
     status: Optional[int] = None
+    code: Optional[int] = None # ABA error code
+    message: Optional[str] = None # ABA error message
     description: Optional[str] = None
     qr_code: Optional[str] = None
     qr_image: Optional[str] = None

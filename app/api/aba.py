@@ -29,8 +29,14 @@ async def create_aba_deeplink(order: ABAOrderCreate, db: Session = Depends(get_s
 
         # 2. Call ABA API
         result = await aba_service.initiate_payment(order)
+        
+        # Log for debugging
+        print(f"ABA API Response: {result}")
+        
+        # If ABA returns an error code, we can still return it but it will now match our schema
         return result
     except Exception as e:
+        print(f"Error in create_aba_deeplink: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/check-transaction", response_model=ABATransactionStatusResponse)

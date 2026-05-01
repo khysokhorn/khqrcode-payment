@@ -21,7 +21,8 @@ class ABAPayWayService:
         items_base64 = ""
         if order.items:
             items_list = [{"name": item.name, "quantity": str(item.quantity), "price": f"{item.price:.2f}"} for item in order.items]
-            items_json = json.dumps(items_list)
+            # Use separators=(',', ':') to remove whitespace for consistent hashing
+            items_json = json.dumps(items_list, separators=(',', ':'))
             items_base64 = base64.b64encode(items_json.encode('utf-8')).decode('utf-8')
 
         amount_str = f"{order.amount:.2f}"

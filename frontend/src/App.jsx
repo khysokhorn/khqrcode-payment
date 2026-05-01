@@ -43,8 +43,8 @@ function App() {
     <div className="container">
       <nav className="navbar">
         <div className="logo">
-          <span className="logo-icon">💎</span>
-          <span className="logo-text">PayGate</span>
+          <img src="/logo.png" alt="RentPay Logo" className="logo-img" />
+          <span className="logo-text">RentPay</span>
         </div>
         <div className="status-badge">
           <span className={`status-dot ${status === 'Backend Connected' ? 'online' : 'offline'}`}></span>
@@ -54,6 +54,7 @@ function App() {
 
       <main>
         <section className="hero">
+          <img src="/logo.png" alt="PayGate Logo" className="hero-logo" />
           <h1 className="gradient-text">Modern Payment Infrastructure</h1>
           <p className="subtitle">Seamlessly integrate ABA PayWay and KHQR into your applications with our robust microservice.</p>
         </section>
@@ -73,7 +74,7 @@ function App() {
                 <h3>Payment Link Generated</h3>
                 <button className="secondary" onClick={() => setResult(null)}>New Test</button>
               </div>
-              
+
               <div className="payment-details">
                 <div className="detail-item">
                   <label>Transaction ID</label>
@@ -96,8 +97,8 @@ function App() {
 
               {result.app_deeplink && (
                 <div className="qr-section">
-                   <p>Payment URL:</p>
-                   <code className="url-box">{result.app_deeplink}</code>
+                  <p>Payment URL:</p>
+                  <code className="url-box">{result.app_deeplink}</code>
                 </div>
               )}
             </div>
@@ -121,7 +122,7 @@ function App() {
       </main>
 
       <footer>
-        <p>&copy; 2024 PayGate Microservice. All rights reserved.</p>
+        <p>&copy; 2024 RentPay Microservice. All rights reserved.</p>
       </footer>
     </div>
   );

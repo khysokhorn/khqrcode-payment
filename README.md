@@ -1,4 +1,4 @@
-# Payment Microservice
+# RentPay Microservice
 
 A FastAPI-based microservice for handling payments. Currently supports **ABA PayWay Deep Link**.
 
