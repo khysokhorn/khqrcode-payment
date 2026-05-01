@@ -3,6 +3,7 @@
 A FastAPI-based microservice for handling payments. Currently supports **ABA PayWay Deep Link**.
 
 ## Features
+
 - **ABA PayWay Integration**: Specifically designed for Deep Link payments.
 - **FastAPI**: High performance, easy to document (Swagger/Redoc).
 - **Plug-and-Play**: Can be called from any other backend (Node.js, Go, Python, etc.) via REST API.
@@ -10,17 +11,19 @@ A FastAPI-based microservice for handling payments. Currently supports **ABA Pay
 
 ## Setup
 
-1.  **Install dependencies**:
+1. **Install dependencies**:
+
     ```bash
     pip install -r requirements.txt
     ```
 
-2.  **Configure environment**:
+2. **Configure environment**:
     Edit `.env` and provide your ABA PayWay credentials:
     - `ABA_PAYWAY_MERCHANT_ID`
     - `ABA_PAYWAY_API_KEY`
 
-3.  **Run the service**:
+3. **Run the service**:
+
     ```bash
     uvicorn app.main:app --reload
     ```
@@ -28,9 +31,11 @@ A FastAPI-based microservice for handling payments. Currently supports **ABA Pay
 ## API Usage
 
 ### Create ABA Deep Link
+
 **Endpoint**: `POST /api/v1/aba/create-deeplink`
 
 **Request Body**:
+
 ```json
 {
   "tran_id": "ORD-123456",
@@ -46,6 +51,7 @@ A FastAPI-based microservice for handling payments. Currently supports **ABA Pay
 ```
 
 **Response**:
+
 ```json
 {
   "status": 0,
@@ -61,6 +67,7 @@ A FastAPI-based microservice for handling payments. Currently supports **ABA Pay
 Since this is a microservice, your other backend (e.g., a Rental Management System) can simply make an HTTP POST request to this service's `create-deeplink` endpoint when a user wants to pay.
 
 Example in Node.js (Axios):
+
 ```javascript
 const response = await axios.post('http://payment-service:8000/api/v1/aba/create-deeplink', {
     tran_id: order.id,
@@ -72,5 +79,6 @@ const deeplink = response.data.abapay_deeplink;
 ```
 
 ## ABA Sandbox
+
 - Documentation: [https://developer.payway.com.kh/](https://developer.payway.com.kh/)
 - Sandbox Transactions: [https://sandbox.payway.com.kh/transactions](https://sandbox.payway.com.kh/transactions)

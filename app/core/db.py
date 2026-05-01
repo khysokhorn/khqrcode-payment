@@ -1,10 +1,13 @@
 from sqlmodel import create_engine, SQLModel, Session
 import os
 
-sqlite_file_name = "payment.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///payment.db")
 
-engine = create_engine(sqlite_url, echo=True)
+# For PostgreSQL, we might need to handle the 'postgres://' vs 'postgresql://' scheme
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+engine = create_engine(DATABASE_URL, echo=True)
 
 def create_db_and_tables():
     from app.models.transaction import Transaction # Import models to register them

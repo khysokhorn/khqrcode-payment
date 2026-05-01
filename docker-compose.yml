@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: payment_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-payment_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: .
+    container_name: payment_backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-payment_db}
+      - ABA_PAYWAY_MERCHANT_ID=${ABA_PAYWAY_MERCHANT_ID}
+      - ABA_PAYWAY_API_KEY=${ABA_PAYWAY_API_KEY}
+      - ABA_PAYWAY_API_URL=${ABA_PAYWAY_API_URL}
+      - ABA_PAYWAY_RETURN_URL=${ABA_PAYWAY_RETURN_URL}
+      - ABA_PAYWAY_CONTINUE_SUCCESS_URL=${ABA_PAYWAY_CONTINUE_SUCCESS_URL}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./static:/app/static
+
+  frontend:
+    build: ./frontend
+    container_name: payment_frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
