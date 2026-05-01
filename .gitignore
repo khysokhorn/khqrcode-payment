@@ -1,0 +1,11 @@
+env/
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.db
+payment.db
+.vscode/
+.idea/
+*.log

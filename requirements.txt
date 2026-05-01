@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pydantic
+python-dotenv
+httpx
+sqlmodel
+bakong-khqr
+qrcode[pil]
+opencv-python-headless
+python-multipart
+numpy
