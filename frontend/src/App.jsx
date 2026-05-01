@@ -43,8 +43,8 @@ function App() {
     <div className="container">
       <nav className="navbar">
         <div className="logo">
-          <img src="/logo.png" alt="RentPay Logo" className="logo-img" />
-          <span className="logo-text">RentPay</span>
+          <img src="/logo.png" alt="PayGate Logo" className="logo-image" />
+          <span className="logo-text">PayGate</span>
         </div>
         <div className="status-badge">
           <span className={`status-dot ${status === 'Backend Connected' ? 'online' : 'offline'}`}></span>
@@ -122,7 +122,7 @@ function App() {
       </main>
 
       <footer>
-        <p>&copy; 2024 RentPay Microservice. All rights reserved.</p>
+        <p>&copy; 2024 PayGate Microservice. All rights reserved.</p>
       </footer>
     </div>
   );
