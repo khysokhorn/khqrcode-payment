@@ -1,7 +1,5 @@
-version: '3.8'
-
 services:
-  db:
+  payment-db:
     image: postgres:15-alpine
     container_name: payment_db
     restart: always
@@ -12,16 +10,18 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5432" # Changed to avoid conflict with host's 5432
+    networks:
+      - payment-network
 
   backend:
     build: .
     container_name: payment_backend
     restart: always
     depends_on:
-      - db
+      - payment-db
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-payment_db}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@payment-db:5432/${POSTGRES_DB:-payment_db}
       - ABA_PAYWAY_MERCHANT_ID=${ABA_PAYWAY_MERCHANT_ID}
       - ABA_PAYWAY_API_KEY=${ABA_PAYWAY_API_KEY}
       - ABA_PAYWAY_API_URL=${ABA_PAYWAY_API_URL}
@@ -31,6 +31,8 @@ services:
       - "8000:8000"
     volumes:
       - ./static:/app/static
+    networks:
+      - payment-network
 
   frontend:
     build: ./frontend
@@ -40,6 +42,12 @@ services:
       - "3000:80"
     depends_on:
       - backend
+    networks:
+      - payment-network
+
+networks:
+  payment-network:
+    driver: bridge
 
 volumes:
   postgres_data:
