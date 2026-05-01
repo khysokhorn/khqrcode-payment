@@ -45,11 +45,14 @@ class KHQRGenerateRequest(BaseModel):
     merchant_city: Optional[str] = "Phnom Penh"
     store_label: Optional[str] = "Main Store"
     terminal_label: Optional[str] = "Cashier 1"
+    callback_url: Optional[str] = None # URL to return to after payment
 
 class KHQRGenerateResponse(BaseModel):
     qr_string: str
     md5: str
     qr_image_base64: Optional[str] = None
+    qr_image_url: Optional[str] = None
+    bakong_deeplink: Optional[str] = None
     tran_id: str
 
 class KHQRDecodeResponse(BaseModel):

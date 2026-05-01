@@ -22,9 +22,14 @@ async def generate_khqr(request: KHQRGenerateRequest, db: Session = Depends(get_
     Generates a KHQR code payload and saves the transaction as PENDING.
     """
     try:
-        # 1. Create a record in our database
+        # 1. Generate KHQR first to get the MD5
+        result = khqr_service.generate_qr(request)
+        md5 = result.get("md5")
+
+        # 2. Create a record in our database
         new_tx = Transaction(
             tran_id=request.tran_id,
+            md5=md5,
             amount=request.amount,
             currency=request.currency,
             status="PENDING"
@@ -32,14 +37,12 @@ async def generate_khqr(request: KHQRGenerateRequest, db: Session = Depends(get_
         db.add(new_tx)
         db.commit()
 
-        # 2. Generate KHQR
-        result = khqr_service.generate_qr(request)
         return result
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/decode", response_model=KHQRDecodeResponse)
+@router.post("/decode")
 async def decode_khqr(
     file: UploadFile = File(...), 
     save_as_template: bool = Form(False),
@@ -58,10 +61,10 @@ async def decode_khqr(
             # Save to database
             template = BankTemplate(
                 name=template_name,
-                bakong_account=result.bakong_account or "",
-                merchant_name=result.merchant_name or "Unknown",
-                merchant_city=result.merchant_city or "Phnom Penh",
-                currency=result.currency or "USD"
+                bakong_account=result.get("bakong_account") or "",
+                merchant_name=result.get("merchant_name") or "Unknown",
+                merchant_city=result.get("merchant_city") or "Phnom Penh",
+                currency=result.get("currency") or "USD"
             )
             db.add(template)
             db.commit()
@@ -71,6 +74,17 @@ async def decode_khqr(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/decode-string")
+async def decode_khqr_string(qr_string: str):
+    """
+    Decodes a KHQR information from a raw QR string.
+    """
+    try:
+        result = khqr_service.decode_from_string(qr_string)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/templates", response_model=BankTemplateResponse)
 async def create_template(template: BankTemplateCreate, db: Session = Depends(get_session)):
@@ -114,9 +128,14 @@ async def generate_from_template(
         merchant_city=template.merchant_city
     )
     
-    # 1. Create a record in our database
+    # 1. Generate KHQR first to get MD5
+    result = khqr_service.generate_qr(request)
+    md5 = result.get("md5")
+
+    # 2. Create a record in our database
     new_tx = Transaction(
         tran_id=request.tran_id,
+        md5=md5,
         amount=request.amount,
         currency=request.currency,
         status="PENDING"
@@ -124,8 +143,6 @@ async def generate_from_template(
     db.add(new_tx)
     db.commit()
 
-    # 2. Generate KHQR
-    result = khqr_service.generate_qr(request)
     return result
 
 @router.get("/verify/{md5}")

@@ -1,14 +1,23 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.api.aba import router as aba_router
 from app.api.khqr import router as khqr_router
 from app.core.db import create_db_and_tables
+import os
 
 app = FastAPI(
     title="Payment Microservice",
     description="Microservice for handling multiple payment gateways, starting with ABA PayWay.",
     version="1.0.0"
 )
+
+# Ensure static directory exists
+if not os.path.exists("static/qr_codes"):
+    os.makedirs("static/qr_codes")
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.on_event("startup")
 def on_startup():
