@@ -28,10 +28,10 @@ services:
       - ABA_PAYWAY_RETURN_URL=${ABA_PAYWAY_RETURN_URL}
       - ABA_PAYWAY_CONTINUE_SUCCESS_URL=${ABA_PAYWAY_CONTINUE_SUCCESS_URL}
     ports:
-      - "8000:8000"
+      - "8001:8001"
     volumes:
       - .:/app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
     networks:
       - payment-network
 

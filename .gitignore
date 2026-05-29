@@ -10,3 +10,4 @@ payment.db
 .idea/
 *.log
 static/
+sample.json
