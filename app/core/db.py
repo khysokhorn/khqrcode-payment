@@ -12,10 +12,10 @@ engine = create_engine(DATABASE_URL, echo=True)
 import time
 from sqlalchemy.exc import OperationalError
 
+
 def create_db_and_tables():
-    from app.models.transaction import Transaction # Import models to register them
-    from app.models.template import BankTemplate
-    
+    from app.models.transaction import Transaction  # Import models to register them
+
     # Simple retry logic for Docker
     max_retries = 5
     for i in range(max_retries):
@@ -29,6 +29,7 @@ def create_db_and_tables():
                 raise e
             print(f"Database not ready yet (attempt {i+1}/{max_retries}). Waiting...")
             time.sleep(2)
+
 
 def get_session():
     with Session(engine) as session:

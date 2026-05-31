@@ -9,3 +9,4 @@ qrcode[pil]
 opencv-python-headless
 python-multipart
 numpy
+alembic
