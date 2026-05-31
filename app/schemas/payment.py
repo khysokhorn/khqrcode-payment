@@ -26,9 +26,10 @@ class KHQRGenerateResponse(BaseModel):
     qr_string: str
     md5: str
     tran_id: str
-    qr_image_base64: Optional[str] = None
     qr_image_url: Optional[str] = None
     bakong_deeplink: Optional[str] = None
+    currency_code: Optional[str] = None
+    amount: Optional[float] = None
 
 
 class KHQRDecodeResponse(BaseModel):

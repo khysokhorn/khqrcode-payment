@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta, timezone
+import uuid
 
 from fastapi import APIRouter, HTTPException, Depends, File, UploadFile, Form, Query
-from sqlmodel import Session, select
+from sqlmodel import Session, func, select
 from typing import List, Optional
 from app.schemas.payment import (
     KHQRGenerateRequest,
@@ -23,9 +24,29 @@ async def generate_khqr(
     query = select(Transaction)
     tx = db.exec(query.where(Transaction.tran_id == request.tran_id)).first()
     if tx and tx.status == "PENDING":
-        is_expired = tx.expire_at and tx.expire_at < datetime.now(timezone.utc)
+        print(f"expired_at: {tx.expired_at}, now: {datetime.now(timezone.utc)}")
+        is_expired = (
+            tx.expired_at
+            and db.exec(
+                select(Transaction.id)
+                .where(Transaction.id == tx.id)
+                .where(Transaction.expired_at > func.now())
+            ).first()
+            is None
+        )
         if not is_expired:
-            return khqr_service.get_KhqrCode(tx)
+            khqr_code_response = khqr_service.get_KhqrCode(tx)
+            return {
+                "qr_string": khqr_code_response.qr_string,
+                "md5": khqr_code_response.md5,
+                "qr_image_url": khqr_code_response.qr_image_url,
+                "tran_id": tx.tran_id,
+                "currency_code": tx.currency,
+                "amount": tx.amount,
+            }
+        else:
+            request.tran_id = str(uuid.uuid4())
+            request.expire_minutes = int(timedelta(days=1).total_seconds() / 60)
 
     """
     Generates a KHQR code payload and saves the transaction as PENDING.
@@ -43,7 +64,7 @@ async def generate_khqr(
             currency=request.currency,
             status="PENDING",
             qr_code_path=qr_code_path,
-            expire_at=datetime.now(timezone.utc) + timedelta(minutes=expire_minutes),
+            expired_at=datetime.now(timezone.utc) + timedelta(minutes=expire_minutes),
         )
         db.add(new_tx)
         db.commit()
@@ -56,7 +77,7 @@ async def generate_khqr(
 
 @router.post("/decode")
 async def decode_khqr(
-    file: UploadFile = File(...),
+    file: Optional[UploadFile] = File(None),
     qrCode_string: Optional[str] = Form(None),
     db: Session = Depends(get_session),
 ):

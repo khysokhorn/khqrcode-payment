@@ -10,3 +10,4 @@ opencv-python-headless
 python-multipart
 numpy
 alembic
+psycopg2-binary

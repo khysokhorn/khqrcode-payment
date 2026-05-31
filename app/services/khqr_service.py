@@ -49,17 +49,35 @@ class KHQRGenerator:
         acc_id = bank_account
         bank_name = "Bakong"
 
-        # Handle ABA specific identification
-        if "@aba" in bank_account.lower():
-            aid = "abaakhppxxx@abaa"
-            acc_id = bank_account.split("@")[0]
-            bank_name = "ABA Bank"
+        # If a domain is specified, map it to the correct SWIFT/BIC and bank name
+        if "@" in bank_account:
+            parts = bank_account.split("@")
+            acc_id = parts[0]
+            domain = parts[1].lower()
+            
+            if "aba" in domain:
+                aid = "abaakhppxxx@abaa"
+                bank_name = "ABA Bank"
+            elif "wing" in domain:
+                aid = "wingkhppxxx@wing"
+                bank_name = "Wing Bank"
+            elif "acleda" in domain or "aclb" in domain:
+                aid = "aclbkhppxxx@aclb"
+                bank_name = "ACLEDA Bank"
+            elif "canadia" in domain or "cadi" in domain:
+                aid = "cadikhppxxx@cadi"
+                bank_name = "Canadia Bank"
+            elif "sathapana" in domain or "spb" in domain:
+                aid = "spbkhppxxx@spb"
+                bank_name = "Sathapana Bank"
+            elif "bakong" in domain:
+                aid = "khqr@bakong"
+                bank_name = "Bakong"
 
         tag29_value = KHQRGenerator.format_tag("00", aid)
         tag29_value += KHQRGenerator.format_tag("01", acc_id)
         # Add bank name as sub-tag 02 for better compatibility
         tag29_value += KHQRGenerator.format_tag("02", bank_name)
-
         payload += KHQRGenerator.format_tag("29", tag29_value)
 
         # 52: Merchant Category Code (5999 is standard)
@@ -191,7 +209,6 @@ class KHQRService:
         return {
             "qr_string": qr_string,
             "md5": md5,
-            "qr_image_base64": img_base64,
             "qr_image_url": qr_image_url,
             "bakong_deeplink": deeplink,
             "tran_id": request.tran_id,
@@ -278,7 +295,7 @@ class KHQRService:
         return KHQRGenerateResponse(
             tran_id=transaction.tran_id,
             qr_string="",
-            md5="",
+            md5=transaction.md5 or "",
             qr_image_url=f"/static/qr_codes/{transaction.tran_id}.png",
         )
 
