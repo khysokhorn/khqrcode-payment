@@ -35,17 +35,6 @@ services:
     networks:
       - payment-network
 
-  frontend:
-    build: ./frontend
-    container_name: payment_frontend
-    restart: always
-    ports:
-      - "3000:80"
-    depends_on:
-      - backend
-    networks:
-      - payment-network
-
 networks:
   payment-network:
     driver: bridge
