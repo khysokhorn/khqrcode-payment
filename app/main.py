@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.api.khqr import router as khqr_router
+from app.api.bakong import router as bakong_router
 from app.core.db import create_db_and_tables
 import os
 
@@ -35,6 +36,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(khqr_router, prefix="/api/v1")
+app.include_router(bakong_router, prefix="/api/v1")
 
 
 @app.get("/")

@@ -23,6 +23,7 @@ async def generate_khqr(
 ):
     query = select(Transaction)
     tx = db.exec(query.where(Transaction.tran_id == request.tran_id)).first()
+    status = tx.status if tx else None
     if tx and tx.status == "PENDING":
         print(f"expired_at: {tx.expired_at}, now: {datetime.now(timezone.utc)}")
         is_expired = (
@@ -48,6 +49,17 @@ async def generate_khqr(
             request.tran_id = str(uuid.uuid4())
             request.expire_minutes = int(timedelta(days=1).total_seconds() / 60)
 
+    if(status == "PAID" and tx):
+            khqr_code_response = khqr_service.get_KhqrCode(tx)
+            return {
+                "qr_string": khqr_code_response.qr_string,
+                "md5": khqr_code_response.md5,
+                "qr_image_url": khqr_code_response.qr_image_url,
+                "tran_id": tx.tran_id,
+                "currency_code": tx.currency,
+                "amount": tx.amount,
+                "status": tx.status,
+            }
     """
     Generates a KHQR code payload and saves the transaction as PENDING.
     """
@@ -90,10 +102,9 @@ async def decode_khqr(
             contents = await file.read()
             result = khqr_service.decode_from_image(contents)
             return result
-
         if qrCode_string:
             result = khqr_service.decode_from_string(qrCode_string)
-        return result
+            return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

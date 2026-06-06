@@ -291,6 +291,18 @@ class KHQRService:
         except Exception as e:
             return {"status": "error", "message": str(e)}
 
+    def get_payment_details(self, md5: str) -> Optional[dict]:
+        """
+        Retrieve raw payment/transaction details from Bakong using the MD5 hash.
+        """
+        if not settings.BAKONG_TOKEN:
+            return None
+        try:
+            return self.khqr.get_payment(md5)
+        except Exception as e:
+            print(f"Error calling get_payment from Bakong SDK: {e}")
+            return None
+
     def get_KhqrCode(self, transaction: Transaction) -> KHQRGenerateResponse:
         return KHQRGenerateResponse(
             tran_id=transaction.tran_id,

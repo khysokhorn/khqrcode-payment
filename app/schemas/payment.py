@@ -30,6 +30,7 @@ class KHQRGenerateResponse(BaseModel):
     bakong_deeplink: Optional[str] = None
     currency_code: Optional[str] = None
     amount: Optional[float] = None
+    status: Optional[str] = None
 
 
 class KHQRDecodeResponse(BaseModel):
@@ -71,3 +72,19 @@ class PaymentStatusResponse(BaseModel):
     amount: Optional[float] = None
     currency: Optional[str] = None
     description: Optional[str] = None
+
+
+class BakongCheckTransactionRequest(BaseModel):
+    md5: Optional[str] = None
+    tran_id: Optional[str] = None
+
+
+class BakongCheckTransactionResponse(BaseModel):
+    status: str  # PAID, UNPAID, or PENDING
+    tran_id: Optional[str] = None
+    md5: Optional[str] = None
+    amount: Optional[float] = None
+    currency: Optional[str] = None
+    bakong_transaction_id: Optional[str] = None
+    raw_data: Optional[dict] = None
+
