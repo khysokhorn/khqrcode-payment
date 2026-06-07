@@ -18,6 +18,7 @@ from app.schemas.payment import (
 )
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 from qrcode.image.pil import PilImage
+from .public_bakong_api import publicBakongApi
 
 
 class KHQRGenerator:
@@ -54,7 +55,7 @@ class KHQRGenerator:
             parts = bank_account.split("@")
             acc_id = parts[0]
             domain = parts[1].lower()
-            
+
             if "aba" in domain:
                 aid = "abaakhppxxx@abaa"
                 bank_name = "ABA Bank"
@@ -286,29 +287,14 @@ class KHQRService:
         """
         Verify transaction status using Bakong API.
         """
-        if not settings.BAKONG_TOKEN:
-            return {
-                "status": "error",
-                "message": "Bakong Developer Token is missing. API features are disabled.",
-            }
-
+        value = await publicBakongApi.check_transaction_by_md5(md5)
+        if value.responseCode == 0 and value.data is not None:
+            return value.data.model_dump()
         try:
             status = self.khqr.check_payment(md5)
             return {"status": status}
         except Exception as e:
             return {"status": "error", "message": str(e)}
-
-    def get_payment_details(self, md5: str) -> Optional[dict]:
-        """
-        Retrieve raw payment/transaction details from Bakong using the MD5 hash.
-        """
-        if not settings.BAKONG_TOKEN:
-            return None
-        try:
-            return self.khqr.get_payment(md5)
-        except Exception as e:
-            print(f"Error calling get_payment from Bakong SDK: {e}")
-            return None
 
     def get_KhqrCode(self, transaction: Transaction) -> KHQRGenerateResponse:
         return KHQRGenerateResponse(

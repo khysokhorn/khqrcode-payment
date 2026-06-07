@@ -49,17 +49,17 @@ async def generate_khqr(
             request.tran_id = str(uuid.uuid4())
             request.expire_minutes = int(timedelta(days=1).total_seconds() / 60)
 
-    if(status == "PAID" and tx):
-            khqr_code_response = khqr_service.get_KhqrCode(tx)
-            return {
-                "qr_string": khqr_code_response.qr_string,
-                "md5": khqr_code_response.md5,
-                "qr_image_url": khqr_code_response.qr_image_url,
-                "tran_id": tx.tran_id,
-                "currency_code": tx.currency,
-                "amount": tx.amount,
-                "status": tx.status,
-            }
+    if status == "PAID" and tx:
+        khqr_code_response = khqr_service.get_KhqrCode(tx)
+        return {
+            "qr_string": khqr_code_response.qr_string,
+            "md5": khqr_code_response.md5,
+            "qr_image_url": khqr_code_response.qr_image_url,
+            "tran_id": tx.tran_id,
+            "currency_code": tx.currency,
+            "amount": tx.amount,
+            "status": tx.status,
+        }
     """
     Generates a KHQR code payload and saves the transaction as PENDING.
     """

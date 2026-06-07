@@ -54,7 +54,7 @@ async def check_transaction(
         tx = db.exec(select(Transaction).where(Transaction.md5 == md5)).first()
 
     # Query Bakong API for payment status details
-    raw_details = khqr_service.get_payment_details(md5)
+    raw_details = await khqr_service.verify_transaction(md5)
 
     if raw_details:
         # Transaction is PAID
