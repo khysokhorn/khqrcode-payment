@@ -80,8 +80,15 @@ class KHQRGenerator:
         tag29_value += KHQRGenerator.format_tag("02", bank_name)
         payload += KHQRGenerator.format_tag("29", tag29_value)
 
-        # 52: Merchant Category Code (5999 is standard)
-        payload += KHQRGenerator.format_tag("52", "5999")
+        # 40: ABA Bank proprietary tag (needed for ABA Mobile App compatibility)
+        if bank_name == "ABA Bank":
+            tag40_value = KHQRGenerator.format_tag("00", "abaP2P")
+            tag40_value += KHQRGenerator.format_tag("01", "849616A9B2D0")
+            tag40_value += KHQRGenerator.format_tag("02", acc_id)
+            payload += KHQRGenerator.format_tag("40", tag40_value)
+
+        # 52: Merchant Category Code (0000 is standard for ABA/Bakong merchant/P2P transfers)
+        payload += KHQRGenerator.format_tag("52", "0000")
 
         # 53: Transaction Currency
         curr_code = "840" if currency == "USD" else "116"

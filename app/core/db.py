@@ -1,7 +1,9 @@
 from sqlmodel import create_engine, SQLModel, Session
 import os
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///payment.db")
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable is not set")
 
 # For PostgreSQL, we might need to handle the 'postgres://' vs 'postgresql://' scheme
 if DATABASE_URL.startswith("postgres://"):

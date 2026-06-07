@@ -11,3 +11,5 @@ payment.db
 *.log
 static/
 sample.json
+.env.local
+.env.*
