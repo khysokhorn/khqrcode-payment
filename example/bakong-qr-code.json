@@ -1,0 +1,23 @@
+{
+  "qr_string": "00020101021129450016abaakhppxxx@abaa01090069922180208ABA Bank40600006abaP2P0112849616A9B2D0020900699221803090002693550404Dual5204000053031165802KH5913SOK KHORN KHY6010Phnom Penh63045643",
+  "bakong_account": "006992218",
+  "merchant_name": "SOK KHORN KHY",
+  "merchant_city": "Phnom Penh",
+  "amount": null,
+  "currency": "KHR",
+  "store_label": null,
+  "terminal_label": null,
+  "country_code": "KH",
+  "raw_tags": {
+    "29": "0016abaakhppxxx@abaa01090069922180208ABA Bank",
+    "40": "0006abaP2P0112849616A9B2D0020900699221803090002693550404Dual",
+    "52": "0000",
+    "53": "116",
+    "58": "KH",
+    "59": "SOK KHORN KHY",
+    "60": "Phnom Penh",
+    "63": "5643",
+    "00": "01",
+    "01": "11"
+  }
+}
