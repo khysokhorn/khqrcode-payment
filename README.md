@@ -83,3 +83,47 @@ const deeplink = response.data.abapay_deeplink;
 - Documentation: [https://developer.payway.com.kh/](https://developer.payway.com.kh/)
 - Sandbox Transactions: [https://sandbox.payway.com.kh/transactions](https://sandbox.payway.com.kh/transactions)
 
+## Public Bakong Open API (`public-bakong`)
+
+Look up transactions through the public Bakong gateway using the new service at
+`GET /api/v1/public-bakong/check`. The client uses Python's standard library and
+does not require a Bakong developer token or additional dependencies.
+
+Start the existing application with `./run.sh`, then use:
+
+```bash
+# Short hash: amount is required; currency defaults to KHR.
+curl 'http://localhost:8001/api/v1/public-bakong/check?type=SHORT_HASH&value=bdf5ac24&amount=2000&ccy=KHR'
+
+# Full transaction hash (64 hexadecimal characters).
+curl 'http://localhost:8001/api/v1/public-bakong/check?type=HASH&value=YOUR_64_CHARACTER_HASH'
+
+# QR MD5 (32 hexadecimal characters); hash is also accepted as an alias for value.
+curl 'http://localhost:8001/api/v1/public-bakong/check?type=MD5&value=YOUR_32_CHARACTER_MD5'
+
+curl 'http://localhost:8001/api/v1/public-bakong/health'
+```
+
+`SHORT_HASH` accepts 8 hexadecimal characters, a positive `amount`, and `ccy=KHR`
+or `ccy=USD`. `HASH` and `MD5` require only the identifier. Invalid inputs return
+HTTP 400. Lookup responses retain the gateway's `txResult` and `txError` fields.
+Transaction timestamps also include UTC `createdDateIso` and
+`acknowledgedDateIso` fields when available. A successful payment lookup requires
+a non-null `txResult` and no `txError`.
+
+Gateway failures use HTTP 200 with `txResult: null` and a structured `txError`:
+`-1` for network errors, `-2` for a missing Nuxt payload, and `-3` for decoding
+errors. Upstream business errors are preserved. This service reads the gateway's
+HTML response, so gateway markup or serialization changes may require updates.
+The health endpoint only checks local availability.
+
+This lookup does not update local payment records. The existing
+`/api/v1/bakong/check-transaction` flow remains separate. Running the full app
+still requires its existing database and `PUBLIC_BAKONG_API` configuration.
+
+Run the client and route tests after installing the project's dependencies:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
